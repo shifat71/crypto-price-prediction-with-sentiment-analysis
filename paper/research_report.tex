@@ -1,0 +1,222 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[strings]{underscore}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{geometry}
+\geometry{top=1in,bottom=1in,left=1in,right=1in}
+
+\title{\textbf{Cryptocurrency Price Prediction with News Sentiment:}\\\vspace{0.2em}\large A Reproducible Research Report from \texttt{crypto-price-analysis-news-sentiment}}
+\author{Generated from experiment artifacts (Dec 2025)}
+\date{December 16, 2025}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Cryptocurrency markets react quickly to information. This project builds an end-to-end pipeline that collects cryptocurrency news via public RSS feeds and market data via CoinGecko, extracts sentiment signals from text (VADER and TextBlob), engineers sentiment and market features, and evaluates machine learning models for (i) return regression and (ii) direction classification at hourly resolution.
+
+This report is grounded in the saved experiment artifacts under \texttt{research\_output/crypto\_sentiment\_research\_2025/} (timestamp \texttt{20251216\_084725}). The experiment contains 301 news articles fetched from public RSS feeds and 10,805 hourly price rows across five cryptocurrencies. Correlation analysis shows statistically significant but small associations between aggregated sentiment and next-step returns (e.g., Pearson $r=0.1204$ for \texttt{sentiment\_mean}, $p=3.6\times 10^{-36}$). For predicting hourly percentage returns (\texttt{target\_return}), the best test-set model is Ridge regression (RMSE $=0.7899$, MAE $=0.5188$, $R^2=0.0074$), indicating limited explained variance for return prediction under this setup. For direction classification (\texttt{target\_direction}), XGBoost achieves test accuracy $=0.554$ and ROC-AUC $=0.574$.
+\end{abstract}
+
+\section{Introduction}
+News and narrative influence crypto markets, but whether news sentiment yields actionable predictive signal at high frequency remains empirically unclear. This project evaluates a practical pipeline: collect news and prices, compute sentiment, build features, and compare models for prediction.
+
+\textbf{Research questions.}
+\begin{enumerate}
+    \item Do aggregated news sentiment features correlate with future cryptocurrency returns at hourly granularity?
+    \item How well can standard ML models predict hourly returns (regression) and direction (classification)?
+    \item Which engineered features are most influential in fitted models?
+\end{enumerate}
+
+\section{Data and Sources}
+\subsection{Assets}
+The pipeline tracks five CoinGecko assets configured in \texttt{src/config.py}: Bitcoin, Ethereum, Solana, Cardano, and Polkadot.
+
+\subsection{Market data (prices, volume, market cap)}
+Hourly market data are fetched using the CoinGecko API (via \texttt{pycoingecko}) \cite{coingecko_api,pycoingecko}.
+
+\subsection{News data (RSS)}
+News is fetched from public RSS feeds using \texttt{feedparser}. In the saved experiment, the dominant sources are listed in \texttt{results/experiment\_results.json}. The feeds include: U.Today \cite{rss_utoday}, Decrypt \cite{rss_decrypt}, CryptoPotato \cite{rss_cryptopotato}, CoinTelegraph \cite{rss_cointelegraph}, CoinDesk \cite{rss_coindesk}, CryptoNews \cite{rss_cryptonews}, AMBCrypto \cite{rss_ambcrypto}, BeInCrypto \cite{rss_beincrypto}, and Bitcoin Magazine \cite{rss_bitcoinmagazine}.
+
+\subsection{Dataset summary (from artifacts)}
+Descriptive statistics are exported by the research pipeline:
+\begin{itemize}
+    \item News articles fetched: 301 (see \texttt{results/experiment\_results.json})
+    \item Hourly market rows: 10,805 (see \texttt{tables/price\_statistics.tex})
+    \item Engineered modeling rows (after merge/targets): 10,795
+\end{itemize}
+
+\input{../research_output/crypto_sentiment_research_2025/tables/price_statistics.tex}
+
+\section{Methods}
+\subsection{Text preprocessing}
+News entries combine title and summary fields and are cleaned using lowercasing, URL/HTML removal, tokenization, stopword removal, and lemmatization (NLTK WordNet). 
+
+\subsection{Sentiment extraction}
+Sentiment is computed with:
+\begin{itemize}
+    \item VADER (compound and class probabilities) \cite{hutto2014vader}
+    \item TextBlob polarity and subjectivity \cite{textblob}
+\end{itemize}
+
+\subsection{Feature engineering and targets}
+The engineered dataset used by the experiment contains market features (returns, moving averages, volatility, momentum, volume changes), aggregated sentiment features (mean/std/min/max, polarity/subjectivity aggregates), and meta features (hour, article count). Targets include future price, percentage return, and direction:
+\[
+\texttt{target\_return} = \left(\frac{\texttt{target\_price}-\texttt{price}}{\texttt{price}}\right)\times 100,\quad
+\texttt{target\_direction} = \mathbb{1}(\texttt{target\_return} > 0).
+\]
+
+\subsection{Experimental design}
+The research pipeline uses a 60/20/20 train/validation/test split with fixed random seed 42. Models evaluated include Linear, Ridge, Random Forest, XGBoost, and LightGBM for regression; and Logistic, Random Forest, XGBoost, LightGBM for classification.
+
+\section{Results}
+\subsection{Sentiment distribution}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig1_sentiment_distribution.png}
+    \caption{Sentiment distribution diagnostics (histogram, KDE, box plot, Q-Q plot).}
+    \label{fig:sentiment_dist}
+\end{figure}
+
+\subsection{Correlation analysis}
+\input{../research_output/crypto_sentiment_research_2025/tables/correlation_analysis.tex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig2_correlation_heatmap.png}
+    \caption{Correlation heatmap for selected engineered variables.}
+    \label{fig:corr_heatmap}
+\end{figure}
+
+\subsection{Regression performance (predicting \texttt{target\_return})}
+\input{../research_output/crypto_sentiment_research_2025/tables/model_comparison.tex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig5_model_comparison.png}
+    \caption{Model comparison across metrics (test split).}
+    \label{fig:model_comparison}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig3_prediction_vs_actual.png}
+    \caption{Predicted vs actual returns for the evaluated models.}
+    \label{fig:pred_vs_actual}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig4_residual_analysis.png}
+    \caption{Residual analysis for the best test model in this run.}
+    \label{fig:residuals}
+\end{figure}
+
+\subsection{Feature importance}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig6_feature_importance.png}
+    \caption{Top feature importances for the best model supporting importance in this run.}
+    \label{fig:feat_importance}
+\end{figure}
+
+\subsection{Direction classification (predicting \texttt{target\_direction})}
+The classification test-set results (from \texttt{tables/classification\_comparison\_test.csv}) indicate XGBoost as best performer with accuracy $0.554$ and ROC-AUC $0.574$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig8_confusion_matrix.png}
+    \caption{Confusion matrix for direction classification.}
+    \label{fig:confusion}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig9_roc_curves.png}
+    \caption{ROC curves for direction classification models.}
+    \label{fig:roc}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../research_output/crypto_sentiment_research_2025/figures/fig10_classification_metrics.png}
+    \caption{Classification metrics comparison across models.}
+    \label{fig:class_metrics}
+\end{figure}
+
+\section{Discussion}
+The experiment shows statistically significant but small sentiment--return correlations, while regression $R^2$ remains near zero on the test split, consistent with the difficulty of predicting hourly returns. Classification performs modestly above chance (ROC-AUC $\approx 0.57$), suggesting weak separability for direction prediction under the current features and splitting protocol.
+
+\paragraph{MAPE caveat.} MAPE is unstable for return targets that cross or approach zero, and should not be interpreted as a primary metric for this task.
+
+\section{Limitations and Threats to Validity}
+\begin{itemize}
+    \item \textbf{Time-series leakage risk:} the experiment uses random splitting rather than strict walk-forward validation.
+    \item \textbf{Timestamp alignment:} news publication timestamps are not consistently available in the saved artifact metadata, which can weaken causal alignment.
+    \item \textbf{Non-stationarity:} cryptocurrency regimes change over time; results may not generalize.
+    \item \textbf{Hypothesis test sensitivity:} very large effective sample sizes can make tiny effects statistically significant.
+\end{itemize}
+
+\section{Reproducibility}
+To reproduce the experiment:
+\begin{enumerate}
+    \item Install dependencies in \texttt{requirements.txt}.
+    \item Generate data (if needed): \texttt{python run\_pipeline.py}.
+    \item Run the research pipeline: \texttt{python run\_research\_pipeline.py}.
+    \item Outputs appear under \texttt{research\_output/crypto\_sentiment\_research\_2025/}.
+\end{enumerate}
+
+\section*{Acknowledgments}
+We thank open data providers and open-source maintainers. Market data are provided by CoinGecko \cite{coingecko_api}. News is collected from public RSS feeds cited in Section~2.
+
+\begin{thebibliography}{99}
+
+\bibitem{coingecko_api}
+CoinGecko. \emph{CoinGecko API}. \url{https://www.coingecko.com/en/api}. Accessed: 2025-12-16.
+
+\bibitem{pycoingecko}
+man-c. \emph{pycoingecko: CoinGecko API wrapper for Python}. \url{https://github.com/man-c/pycoingecko}. Accessed: 2025-12-16.
+
+\bibitem{rss_utoday}
+U.Today. \emph{RSS Feed}. \url{https://u.today/rss}. Accessed: 2025-12-16.
+
+\bibitem{rss_decrypt}
+Decrypt. \emph{RSS Feed}. \url{https://decrypt.co/feed}. Accessed: 2025-12-16.
+
+\bibitem{rss_cryptopotato}
+CryptoPotato. \emph{RSS Feed}. \url{https://cryptopotato.com/feed/}. Accessed: 2025-12-16.
+
+\bibitem{rss_cointelegraph}
+CoinTelegraph. \emph{RSS Feed}. \url{https://cointelegraph.com/rss}. Accessed: 2025-12-16.
+
+\bibitem{rss_coindesk}
+CoinDesk. \emph{RSS Feed}. \url{https://www.coindesk.com/arc/outboundfeeds/rss/}. Accessed: 2025-12-16.
+
+\bibitem{rss_cryptonews}
+CryptoNews. \emph{RSS Feed}. \url{https://cryptonews.com/news/feed/}. Accessed: 2025-12-16.
+
+\bibitem{rss_ambcrypto}
+AMBCrypto. \emph{RSS Feed}. \url{https://ambcrypto.com/feed/}. Accessed: 2025-12-16.
+
+\bibitem{rss_beincrypto}
+BeInCrypto. \emph{RSS Feed}. \url{https://beincrypto.com/feed/}. Accessed: 2025-12-16.
+
+\bibitem{rss_bitcoinmagazine}
+Bitcoin Magazine. \emph{RSS Feed}. \url{https://bitcoinmagazine.com/.rss/full/}. Accessed: 2025-12-16.
+
+\bibitem{hutto2014vader}
+C.~J. Hutto and E. Gilbert. \emph{VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text}. Proceedings of ICWSM (2014).
+
+\bibitem{textblob}
+TextBlob. \emph{TextBlob Documentation}. \url{https://textblob.readthedocs.io/}. Accessed: 2025-12-16.
+
+\end{thebibliography}
+
+\end{document}

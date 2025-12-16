@@ -1,0 +1,44 @@
+\contentsline {section}{\numberline {1}Executive Summary}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Key Findings}{3}{subsection.1.1}%
+\contentsline {section}{\numberline {2}Data Collection}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Price Data}{3}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Price Statistics}{3}{subsubsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.2}News Data}{4}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}News Sources Distribution}{4}{subsubsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.3}Data Pipeline}{4}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Methodology}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Data Preprocessing}{5}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Text Cleaning}{5}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Sentiment Analysis}{5}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Feature Engineering}{5}{subsubsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.2}Data Split}{6}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Models Evaluated}{6}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Traditional Machine Learning}{6}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Deep Learning Models}{6}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}LSTM Architecture}{6}{subsubsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.4}Evaluation Metrics}{7}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Regression Metrics}{7}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Classification Metrics}{7}{subsubsection.3.4.2}%
+\contentsline {section}{\numberline {4}Results}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Correlation Analysis}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Hypothesis Test Results}{8}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Regression Results}{8}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Validation Set Performance}{8}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}Test Set Performance}{9}{subsubsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.4}Classification Results}{9}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Validation Set Performance}{9}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Test Set Performance}{9}{subsubsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.5}Residual Analysis}{9}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Discussion}{10}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Sentiment-Price Relationship}{10}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Model Performance Analysis}{10}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Regression Tasks}{10}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Classification Tasks}{10}{subsubsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.3}Deep Learning Observations}{11}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Conclusions}{11}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Key Findings}{11}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Limitations}{11}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Recommendations}{12}{subsection.6.3}%
+\contentsline {section}{\numberline {A}Configuration Parameters}{12}{appendix.A}%
+\contentsline {section}{\numberline {B}LSTM Hyperparameters}{12}{appendix.B}%
+\contentsline {section}{\numberline {C}Feature List}{12}{appendix.C}%
